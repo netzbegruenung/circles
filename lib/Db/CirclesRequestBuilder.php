@@ -180,9 +180,7 @@ class CirclesRequestBuilder extends CoreRequestBuilder {
 			->add(
 				$expr->eq(
 					$qb->createNamedParameter($circleUniqueId),
-					$qb->createFunction(
-						'SUBSTR(`c`.`unique_id`, 1, ' . Circle::SHORT_UNIQUE_ID_LENGTH . ')'
-					)
+					'c.unique_short_id'
 				)
 			);
 
@@ -263,10 +261,7 @@ class CirclesRequestBuilder extends CoreRequestBuilder {
 			   $expr->andX(
 				   $expr->eq(
 					   'u.circle_id',
-					   $qb->createFunction(
-						   'SUBSTR(' . $pf . '`unique_id`, 1, ' . Circle::SHORT_UNIQUE_ID_LENGTH
-						   . ')'
-					   )
+					   $this->default_select_alias . '.unique_short_id'
 				   ),
 				   $expr->eq('u.user_id', $qb->createNamedParameter($userId)),
 				   $expr->eq('u.user_type', $qb->createNamedParameter(Member::TYPE_USER))
@@ -297,11 +292,8 @@ class CirclesRequestBuilder extends CoreRequestBuilder {
 			   $this->default_select_alias, CoreRequestBuilder::TABLE_MEMBERS, 'o',
 			   $expr->andX(
 				   $expr->eq(
-					   $qb->createFunction(
-						   'SUBSTR(' . $pf . '`unique_id`, 1, ' . Circle::SHORT_UNIQUE_ID_LENGTH
-						   . ')'
-					   )
-					   , 'o.circle_id'
+					   $this->default_select_alias . '.unique_short_id',
+					   'o.circle_id'
 				   ),
 				   $expr->eq('o.level', $qb->createNamedParameter(Member::LEVEL_OWNER)),
 				   $expr->eq('o.user_type', $qb->createNamedParameter(Member::TYPE_USER))
@@ -357,9 +349,7 @@ class CirclesRequestBuilder extends CoreRequestBuilder {
 		   ->where(
 			   $qb->expr()
 				  ->eq(
-					  $qb->createFunction(
-						  'SUBSTR(`unique_id`, 1, ' . Circle::SHORT_UNIQUE_ID_LENGTH . ')'
-					  ),
+					'unique_short_id',
 					  $qb->createNamedParameter($circleUniqueId)
 				  )
 		   );
